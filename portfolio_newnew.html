@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rehan Desai — Creative Developer</title>
+  <style>
+    /* 01 — VISUAL IDENTITY & VARIABLES */
+    :root {
+      --bg-color: #F6F4EF;
+      --surface-color: #ECEAE4;
+      --text-main: #171717;
+      --text-muted: #74736D;
+      --border-color: rgba(23, 23, 23, 0.12);
+      --accent: #171717;
+      
+      /* Soft Pastel Colors for Interactivity & Highlights */
+      --color-blue: #D6E8FC;
+      --color-green: #DDF0D6;
+      --color-yellow: #FDF5C9;
+      
+      /* Easing for premium feel */
+      --ease-out: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+      --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    }
+
+    /* 02 — TYPOGRAPHY & RESET */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      cursor: none; /* Hide default cursor for desktop */
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .meta {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    p {
+      font-size: clamp(1.125rem, 2vw, 1.35rem);
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    a {
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    /* 10 — CUSTOM CURSOR */
+    .cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), 
+                  background-color 0.3s var(--ease-out), border 0.3s var(--ease-out);
+    }
+
+    .cursor.hovered {
+      width: 60px;
+      height: 60px;
+      background-color: rgba(23, 23, 23, 0.08);
+      border: 1px solid rgba(23, 23, 23, 0.2);
+      backdrop-filter: blur(2px);
+    }
+
+    /* FLOATING PROJECT IMAGE PREVIEW */
+    .project-image-preview {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 320px;
+      height: 220px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8) rotate(-5deg);
+      transition: opacity 0.4s var(--ease-out), transform 0.6s var(--ease-out);
+      z-index: 90;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .project-image-preview.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+
+    .project-image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 03 — NAVIGATION */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 2rem 5vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: linear-gradient(to bottom, var(--bg-color) 60%, transparent);
+    }
+
+    .nav-brand {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+    }
+
+    /* LAYOUT UTILITIES */
+    .container {
+      padding: 0 5vw;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .section-spacing {
+      padding: 8rem 0;
+    }
+
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: 3fr 7fr;
+      gap: 4rem;
+    }
+
+    .section-header {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .section-num {
+      color: var(--text-muted);
+    }
+
+    /* 04 — HERO SECTION */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 6rem;
+    }
+
+    .hero-content-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-meta-title {
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 6vw, 6.5rem);
+      line-height: 1;
+      margin-bottom: 2.5rem;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-bio {
+      max-width: 650px;
+      margin-bottom: 4rem;
+      color: var(--text-muted);
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 2rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .hero-tags span {
+      transition: color 0.3s ease, transform 0.3s var(--ease-out);
+      display: inline-block;
+    }
+    
+    .hero-tags span:hover {
+      color: var(--text-main);
+      transform: translateY(-4px);
+    }
+
+    /* NEW: Highlighted Hero Image */
+    .hero-image-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-top: 2rem;
+    }
+
+    /* The interactive highlight backdrop */
+    .image-highlight {
+      position: absolute;
+      bottom: 0;
+      width: 85%;
+      height: 85%;
+      background-color: var(--color-yellow);
+      border-radius: 200px 200px 0 0; /* Creates a nice editorial arch */
+      z-index: 0;
+      transition: all 0.6s var(--ease-out);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+    }
+
+    .hero-image-wrapper:hover .image-highlight {
+      transform: scale(1.05) translateY(-10px);
+      background-color: var(--color-blue);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+    }
+
+    /* The portrait image */
+    .hero-profile-img {
+      position: relative;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      z-index: 1;
+      transform: scale(1);
+      transition: transform 0.6s var(--ease-out);
+      display: block;
+    }
+
+    .hero-image-wrapper:hover .hero-profile-img {
+      transform: scale(1.03) translateY(-5px);
+    }
+
+    /* 07 — PHILOSOPHY SECTION */
+    .philosophy {
+      background-color: var(--surface-color);
+      padding: 8rem 5vw;
+      margin: 0 -5vw;
+    }
+
+    .philosophy h2 {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      margin-bottom: 3rem;
+      max-width: 800px;
+    }
+
+    .philosophy-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .philosophy-list li {
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+      transition: color 0.3s ease;
+    }
+    
+    .philosophy-list li:hover {
+      color: var(--text-main);
+    }
+
+    /* 05 — ABOUT SECTION */
+    .about-text {
+      color: var(--text-muted);
+    }
+
+    .about-text p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .about-image-container {
+      margin-top: 3rem;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    
+    .about-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(80%) sepia(10%);
+      transition: filter 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+    
+    .about-image-container:hover img {
+      filter: grayscale(0%) sepia(0%);
+      transform: scale(1.05);
+    }
+
+    /* 06 — SELECTED WORK */
+    .project-index {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 2.5rem 1rem;
+      border-top: 1px solid var(--border-color);
+      transition: all 0.5s var(--ease-out);
+      position: relative;
+      z-index: 2;
+    }
+
+    .project-row:last-child {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .project-info {
+      display: flex;
+      align-items: baseline;
+      gap: 2rem;
+    }
+
+    .project-title {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      transition: transform 0.4s var(--ease-out);
+    }
+
+    .project-tech {
+      text-align: right;
+    }
+
+    /* Colorful Hover Interactions for Projects */
+    .project-row:hover {
+      padding: 3rem 1.5rem;
+      border-top-color: transparent;
+    }
+    
+    .project-row:nth-child(1):hover { background-color: var(--color-blue); }
+    .project-row:nth-child(2):hover { background-color: var(--color-green); }
+    .project-row:nth-child(3):hover { background-color: var(--color-yellow); }
+
+    .project-row:hover .project-title {
+      transform: translateX(20px);
+    }
+    
+    .project-row:hover .project-tech, .project-row:hover .section-num {
+      color: var(--text-main);
+    }
+
+    /* 08 — CONTACT */
+    .contact-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .contact-title {
+      font-size: clamp(3rem, 6vw, 6rem);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .contact-links a {
+      font-size: clamp(1.2rem, 2vw, 1.5rem);
+      position: relative;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .contact-links a::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--text-main);
+      transform: scaleX(0);
+      transform-origin: bottom right;
+      transition: transform 0.4s var(--ease-out);
+    }
+
+    .contact-links a:hover::after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
+    }
+
+    /* 09 — FOOTER */
+    footer {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4rem;
+    }
+
+    /* 11 — ANIMATIONS */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        transition: none;
+        opacity: 1;
+        transform: none;
+      }
+      .cursor, .project-image-preview { display: none; }
+      * { cursor: auto !important; }
+    }
+
+    /* 12 — RESPONSIVE DESIGN */
+    @media (max-width: 1024px) {
+      .hero-content-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        padding-top: 4rem;
+      }
+      
+      .hero-image-wrapper {
+        order: -1; /* Puts the image above the text on smaller screens */
+        max-width: 350px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .editorial-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      
+      .project-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .project-info {
+        gap: 1rem;
+      }
+
+      .project-tech {
+        text-align: left;
+        padding-left: 2.2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      html { font-size: 14px; }
+      nav { padding: 1.5rem 20px; }
+      .container { padding: 0 20px; }
+      .philosophy { padding: 5rem 20px; margin: 0 -20px; }
+      
+      /* Disable cursor & hover images on mobile/touch */
+      .cursor, .project-image-preview { display: none !important; }
+      * { cursor: auto !important; }
+      
+      .nav-links { display: none; }
+      
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Elements -->
+  <div class="cursor"></div>
+  <div class="project-image-preview">
+    <img id="preview-img" src="" alt="Project Preview">
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#" class="nav-brand hoverable">REHAN DESAI</a>
+    <div class="nav-links">
+      <a href="#about" class="hoverable">ABOUT</a>
+      <a href="#work" class="hoverable">WORK</a>
+      <a href="#contact" class="hoverable">CONTACT</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content-grid">
+        
+        <!-- Text Column -->
+        <div class="hero-text">
+          <div class="meta hero-meta-title reveal">CREATIVE DEVELOPER</div>
+          <h1 class="reveal">REHAN DESAI</h1>
+          <p class="hero-bio reveal">
+            I am an IT student and aspiring software engineer with an obsession for high-performance interfaces, minimalist aesthetics, and writing clean, scalable code.
+          </p>
+          <div class="hero-tags reveal">
+            <span class="meta hoverable">IT STUDENT</span>
+            <span class="meta hoverable">SOFTWARE ENGINEERING</span>
+            <span class="meta hoverable">DESIGN + DEVELOPMENT</span>
+          </div>
+        </div>
+
+        <!-- Image Column -->
+        <div class="hero-image-wrapper reveal hoverable">
+          <div class="image-highlight"></div>
+          <img src="rehan.png" alt="Rehan Desai Profile" class="hero-profile-img">
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="section-spacing philosophy">
+      <div class="meta hero-meta-title reveal">DESIGN × ENGINEERING</div>
+      <h2 class="reveal">Bridging the gap between design and engineering.</h2>
+      <ul class="philosophy-list">
+        <li class="reveal hoverable">01 — High-performance interfaces</li>
+        <li class="reveal hoverable">02 — Minimalist aesthetics</li>
+        <li class="reveal hoverable">03 — Clean, scalable code</li>
+      </ul>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-spacing">
+      <div class="editorial-grid">
+        <div class="section-header reveal">
+          <span class="meta section-num">01 /</span>
+          <span class="meta">ABOUT</span>
+        </div>
+        <div class="about-text reveal">
+          <p>
+            With a foundation in Information Technology, I approach software engineering not just as a technical challenge, but as a design discipline. I believe that the best digital products are built at the intersection of robust backend logic and refined frontend experiences.
+          </p>
+          <p>
+            Currently, I am focusing my studies on modern web technologies, building scalable architectures, and refining my eye for editorial UI design. My goal is to build digital tools that feel as good as they function.
+          </p>
+          
+          <!-- Abstract About Image -->
+          <div class="about-image-container hoverable reveal">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop" alt="Abstract Design Approach">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Work Section -->
+    <section id="work" class="section-spacing">
+      <div class="editorial-grid">
+        <div class="section-header reveal">
+          <span class="meta section-num">02 /</span>
+          <span class="meta">SELECTED WORK</span>
+        </div>
+        
+        <div class="project-index">
+          
+          <!-- Project 1 (Blue Hover) -->
+          <a href="#" class="project-row hoverable project-trigger reveal" data-img="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop">
+            <div class="project-info">
+              <span class="meta section-num">01</span>
+              <h3 class="project-title">E-Commerce Platform</h3>
+            </div>
+            <div class="project-tech meta">React / Node.js / MongoDB</div>
+          </a>
+          
+          <!-- Project 2 (Green Hover) -->
+          <a href="#" class="project-row hoverable project-trigger reveal" data-img="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop">
+            <div class="project-info">
+              <span class="meta section-num">02</span>
+              <h3 class="project-title">Fintech Dashboard</h3>
+            </div>
+            <div class="project-tech meta">Vue / Tailwind / Firebase</div>
+          </a>
+          
+          <!-- Project 3 (Yellow Hover) -->
+          <a href="#" class="project-row hoverable project-trigger reveal" data-img="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop">
+            <div class="project-info">
+              <span class="meta section-num">03</span>
+              <h3 class="project-title">AI Content Generator</h3>
+            </div>
+            <div class="project-tech meta">Python / OpenAI API / Next.js</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section-spacing">
+      <div class="editorial-grid">
+        <div class="section-header reveal">
+          <span class="meta section-num">03 /</span>
+          <span class="meta">CONTACT</span>
+        </div>
+        
+        <div class="contact-block reveal">
+          <h2 class="contact-title">LET'S TALK.</h2>
+          <div class="contact-links">
+            <a href="mailto:rehandesai.dev@gmail.com" class="hoverable">rehandesai.dev@gmail.com</a>
+            <a href="tel:+917021283748" class="hoverable" style="color: var(--text-muted); font-size: 1rem;">+91 7021283748</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="meta">REHAN DESAI</div>
+      <div class="meta" style="text-transform: none; display: flex; gap: 1rem;">
+        <span>rehandesai.dev@gmail.com</span>
+        <span>+91 7021283748</span>
+      </div>
+      <div class="meta">&copy; 2026 REHAN DESAI</div>
+    </footer>
+
+  </main>
+
+  <script>
+    // 01 — Custom Cursor & Floating Image Logic
+    const cursor = document.querySelector('.cursor');
+    const hoverables = document.querySelectorAll('.hoverable');
+    
+    // Elements for floating project image
+    const projectPreview = document.querySelector('.project-image-preview');
+    const previewImg = document.getElementById('preview-img');
+    const projectTriggers = document.querySelectorAll('.project-trigger');
+
+    // Only run if the device supports hover (ignores touch screens)
+    if (window.matchMedia("(any-hover: hover)").matches) {
+      
+      // Track mouse movement for BOTH cursor and the floating image
+      document.addEventListener('mousemove', (e) => {
+        // Move Custom Cursor
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        
+        // Move Floating Image (with slight offset so it doesn't cover the cursor)
+        projectPreview.style.left = (e.clientX + 100) + 'px';
+        projectPreview.style.top = (e.clientY + 50) + 'px';
+      });
+
+      // Expand custom cursor on hoverable elements
+      hoverables.forEach(elem => {
+        elem.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+        elem.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+      });
+      
+      // Floating Image logic for project rows
+      projectTriggers.forEach(trigger => {
+        trigger.addEventListener('mouseenter', function() {
+          const imgSrc = this.getAttribute('data-img');
+          previewImg.src = imgSrc;
+          projectPreview.classList.add('active');
+        });
+        
+        trigger.addEventListener('mouseleave', function() {
+          projectPreview.classList.remove('active');
+        });
+      });
+    }
+
+    // 02 — Intersection Observer for Scroll Animations
+    const reveals = document.querySelectorAll('.reveal');
+
+    const revealOptions = {
+      threshold: 0.1, 
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('active');
+          }, index * 50); 
+          observer.unobserve(entry.target);
+        }
+      });
+    }, revealOptions);
+
+    reveals.forEach(reveal => {
+      revealOnScroll.observe(reveal);
+    });
+  </script>
+</body>
+</html>
